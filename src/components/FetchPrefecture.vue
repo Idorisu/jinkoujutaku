@@ -50,6 +50,21 @@ const drawChart = async (id, name) => {
   }
 }
 
+/* const drawChartAge = async (id, name, age) => {
+  const path = `population/composition/perYear?prefCode=${id}`
+  try {
+    const response = await getPrefectures(path)
+    const population = response.data.result.data
+      .find((item) => item.label === age)
+      .data.map((val) => val['value'])
+    emit('addItems', id, name, population)
+    prefectures.value[id - 1].isChecked = true
+    console.log(prefectures.value[id - 1].isChecked)
+  } catch (error) {
+    console.error(error.message)
+  }
+} */
+
 const deleteChart = (id) => {
   emit('removeItems', id)
   prefectures.value[id - 1].isChecked = false
@@ -62,6 +77,14 @@ const switchChart = (id, name, isChecked) => {
     drawChart(id, name)
   }
 }
+
+/* const switchChartAge = (id, name, isCheckedAge, age) => {
+  if (isCheckedAge) {
+    deleteChart(id)
+  } else {
+    drawChartAge(id, name, age)
+  }
+} */
 </script>
 
 <template>
@@ -84,7 +107,6 @@ const switchChart = (id, name, isChecked) => {
 <style scoped>
 .prefZone {
   display: flex;
-  flex-wrap: wrap;
   justify-content: space-between;
   margin: 10px auto;
   padding: 10px 10px;
@@ -101,7 +123,12 @@ const switchChart = (id, name, isChecked) => {
   color: black;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.selection {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
 .prefecture:checked {

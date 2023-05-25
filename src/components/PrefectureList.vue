@@ -1,5 +1,6 @@
 <script setup>
 import FetchPrefecture from './FetchPrefecture.vue'
+import PrefectureAgeGroup from './PrefectureAgeGroup.vue'
 import { Chart } from 'highcharts-vue'
 import { reactive } from 'vue'
 
@@ -54,12 +55,14 @@ const addItems = (id, name, population) => {
       name: name,
       data: population
     })
-    /* return addItems() */
   },
   removeItems = (id) => {
     options.series = options.series.filter((item) => item.id !== id)
-    /* return removeItems() */
   }
+
+/* const isCheckedAge = (id, name, population) => {
+  options.series = options.series.filter((item) => item.id !== id)
+} */
 </script>
 
 <template>
@@ -71,6 +74,7 @@ const addItems = (id, name, population) => {
       <h2>Prefecture Selector / 都道府県選ぶ</h2>
       <FetchPrefecture @addItems="addItems" @removeItems="removeItems" />
       <div class="PrefList"></div>
+      <PrefectureAgeGroup />
       <div class="highchart">
         <Highcharts :options="options" />
       </div>
