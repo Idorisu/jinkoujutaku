@@ -75,6 +75,9 @@ const addItems = (id, name, population) => {
       <FetchPrefecture @addItems="addItems" @removeItems="removeItems" />
       <div class="PrefList"></div>
       <PrefectureAgeGroup />
+      <div class="clearer">
+        <button>Clear</button>
+      </div>
       <div class="highchart">
         <Highcharts :options="options" />
       </div>
@@ -138,5 +141,17 @@ h2 {
   justify-content: center;
   align-items: center;
   padding: 0px;
+}
+
+button {
+  width: 100px;
+  height: 40px;
+  margin: 0px;
+  border-radius: 20px;
+  background-color: #322c35;
+  color: #ffffff;
+  font-size: 20px;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  border: 3px solid #ffffff;
 }
 </style>

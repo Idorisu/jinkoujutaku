@@ -85,6 +85,14 @@ const switchChart = (id, name, isChecked) => {
     drawChartAge(id, name, age)
   }
 } */
+
+const isCheckedColor = (isChecked) => {
+  if (isChecked) {
+    return '#3a0852'
+  } else {
+    return '#ffffff'
+  }
+}
 </script>
 
 <template>
@@ -97,6 +105,7 @@ const switchChart = (id, name, isChecked) => {
           :id="prefecture.id"
           :checked="prefecture.isChecked"
           @click="switchChart(prefecture.id, prefecture.name, prefecture.isChecked)"
+          :style="{ backgroundcolor: isCheckedColor }"
         />
         {{ prefecture.name }}
       </label>
@@ -117,12 +126,17 @@ const switchChart = (id, name, isChecked) => {
 }
 
 .prefecture {
-  margin: 10px;
-  padding: 10px;
+  margin: 5px;
+  padding: 15px;
   background-color: #ffffff;
   color: black;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.prefecture:checked {
+  background-color: #3a0852;
+  color: #ffffff;
 }
 
 .selection {
@@ -131,8 +145,8 @@ const switchChart = (id, name, isChecked) => {
   justify-content: space-between;
 }
 
-.prefecture:checked {
-  background-color: #7b3a9b;
+.prefecture:hover {
+  background-color: #3a0852;
   color: #ffffff;
 }
 </style>
