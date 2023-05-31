@@ -1,6 +1,14 @@
+<!-- eslint-disable vue/no-mutating-props -->
+<!-- eslint-disable vue/no-setup-props-destructure -->
+<!-- eslint-disable vue/no-dupe-keys -->
 <script setup>
 import axios from 'axios'
-import { ref, onMounted, defineEmits } from 'vue'
+import { ref, onMounted, defineEmits, defineProps } from 'vue'
+
+const { setAge } = defineProps(['setAge'])
+const currId = ref('')
+const currName = ref('')
+const currisChecked = ref(false)
 
 const emit = defineEmits(['addItems', 'removeItems'])
 
@@ -16,9 +24,101 @@ const getPrefectures = async (path) => {
 }
 
 const prefectures = ref([])
+const insertedGraphs = ref([])
+const selectedPrefs = ref([])
+
+const proceedSaving = () => {
+  /* console.log('I am in proceedSaving')
+  console.log(selectedPrefs.value) */
+  prefectures.value.forEach((obj) => {
+    if (
+      obj.isChecked === true &&
+      !selectedPrefs.value.some((item) => item.id === obj.id) &&
+      !selectedPrefs.value.some((item) => item.name === obj.name)
+    ) {
+      selectedPrefs.value.push({ id: obj.id, name: obj.name, setAge: setAge })
+      /* console.log(selectedPrefs.value) */
+    } else if (!obj.isChecked) {
+      selectedPrefs.value = selectedPrefs.value.filter((item) => item.id !== obj.id)
+      /* console.log(selectedPrefs.value) */
+    }
+  })
+  localStorage.setItem('selectedPrefs', JSON.stringify(selectedPrefs.value))
+}
+
+const loadSaving = async () => {
+  console.log('I am in loadSaving')
+  const savedPrefs = JSON.parse(localStorage.getItem('selectedPrefs'))
+  console.log(savedPrefs)
+  if (savedPrefs !== null) {
+    /* console.log('SavedPrefs is not null')
+    console.log('Im printing prefectures first', prefectures.value) */
+    prefectures.value.forEach((item) => {
+      savedPrefs.forEach((obj) => {
+        /* console.log('Inside the foreach loop: ', obj.name, item.name) */
+        if (obj.name === item.name) {
+          /* console.log('I am in loadSaving, and the name is ', item.name) */
+          item.isChecked = true
+          updatePopulation(item.id, item.name, setAge)
+        }
+      })
+    })
+  }
+}
+
+const setPrefectureToggle = async (id, name) => {
+  /* console.log('I am in setPrefectureToggle') */
+  console.log(id, name)
+  prefectures.value.forEach((obj) => {
+    /* console.log(obj.id, obj.name) */
+    if (obj.id === id && obj.name === name) {
+      obj.isChecked = true
+    }
+  })
+  console.log(prefectures.value)
+}
+
+const clearSaved = () => {
+  localStorage.removeItem('selectedPrefs')
+  prefectures.value.forEach((obj) => {
+    obj.isChecked = false
+  })
+}
+
+const updatePopulation = async (id, name, setAge) => {
+  /* console.log('I am in updatePopulation, and the Age is ' + setAge)
+  console.log('I am in updatePopulation, and the id is ' + id) */
+  const path = `population/composition/perYear?prefCode=${id}`
+  try {
+    const response = await getPrefectures(path)
+    const population = response.data.result.data
+      .find((item) => item.label === setAge)
+      .data.map((val) => val['value'])
+    prefectures.value[id - 1].isChecked = true
+    console.log(prefectures.value[id - 1].isChecked)
+    if (population !== undefined) {
+      /* console.log('I am in updatePopulation, population is VALID!')
+      console.log(setAge) */
+      deleteChart(id)
+      drawChartAge(id, name, setAge)
+    }
+  } catch (error) {
+    console.error(error.message)
+  }
+}
+
+defineExpose({
+  prefectures,
+  insertedGraphs,
+  updatePopulation,
+  setPrefectureToggle,
+  proceedSaving,
+  clearSaved
+})
 
 onMounted(async () => {
   fetchPrefectures()
+  loadSaving()
 })
 
 const fetchPrefectures = async () => {
@@ -32,12 +132,14 @@ const fetchPrefectures = async () => {
         isChecked: false
       }
     })
+    loadSaving()
   } catch (error) {
     console.error(error.message)
   }
 }
 
 const drawChart = async (id, name) => {
+  /* console.log('Im currently in DrawChart, and the id is ' + setAge) */
   const path = `population/composition/perYear?prefCode=${id}`
   try {
     const response = await getPrefectures(path)
@@ -50,7 +152,7 @@ const drawChart = async (id, name) => {
   }
 }
 
-/* const drawChartAge = async (id, name, age) => {
+const drawChartAge = async (id, name, age) => {
   const path = `population/composition/perYear?prefCode=${id}`
   try {
     const response = await getPrefectures(path)
@@ -63,28 +165,37 @@ const drawChart = async (id, name) => {
   } catch (error) {
     console.error(error.message)
   }
-} */
+}
 
 const deleteChart = (id) => {
   emit('removeItems', id)
+  insertedGraphs.value = insertedGraphs.value.filter((item) => item.id !== id)
   prefectures.value[id - 1].isChecked = false
+  /* console.log(setAge) */
 }
 
-const switchChart = (id, name, isChecked) => {
+const switchChart = (id, name, isChecked, setAge) => {
   if (isChecked) {
     deleteChart(id)
+    currId.value = ''
+    currName.value = ''
+    currisChecked.value = false
   } else {
-    drawChart(id, name)
+    if (setAge === '合計' || setAge === '総人口') {
+      console.log('If no place')
+      currId.value = id
+      currName.value = name
+      currisChecked.value = true
+      drawChart(id, name)
+    } else {
+      currId.value = id
+      currName.value = name
+      currisChecked.value = true
+      /* console.log('Im currently in switchChart, and the age is ' + setAge) */
+      drawChartAge(id, name, setAge)
+    }
   }
 }
-
-/* const switchChartAge = (id, name, isCheckedAge, age) => {
-  if (isCheckedAge) {
-    deleteChart(id)
-  } else {
-    drawChartAge(id, name, age)
-  }
-} */
 
 const isCheckedColor = (isChecked) => {
   if (isChecked) {
@@ -96,7 +207,7 @@ const isCheckedColor = (isChecked) => {
 </script>
 
 <template>
-  <div class="PrefZone">
+  <div id="prefZone" class="PrefZone">
     <!-- <input v-model.trim="search" type="text" placeholder="県サーチ。。。" /> -->
     <div v-for="prefecture in prefectures" :key="prefecture.id" class="prefecture">
       <label :for="prefecture.id">
@@ -104,7 +215,10 @@ const isCheckedColor = (isChecked) => {
           type="checkbox"
           :id="prefecture.id"
           :checked="prefecture.isChecked"
-          @click="switchChart(prefecture.id, prefecture.name, prefecture.isChecked)"
+          @click="
+            console.log(setAge),
+              switchChart(prefecture.id, prefecture.name, prefecture.isChecked, setAge)
+          "
           :style="{ backgroundcolor: isCheckedColor }"
         />
         {{ prefecture.name }}
@@ -114,20 +228,23 @@ const isCheckedColor = (isChecked) => {
 </template>
 
 <style scoped>
-.prefZone {
-  display: flex;
-  justify-content: space-between;
+div #prefZone .prefZone {
+  width: 1600px;
+  justify-content: center;
+  align-items: center;
   margin: 10px auto;
   padding: 10px 10px;
   background-color: #cd2222;
-  border-radius: 20px;
+  border-radius: 10px;
   border: #7b3a9b;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 .prefecture {
-  margin: 5px;
-  padding: 15px;
+  display: flex;
+  max-width: 1600px;
+  margin: 2px;
+  padding: 10px;
   background-color: #ffffff;
   color: black;
   border-radius: 10px;
@@ -148,5 +265,16 @@ const isCheckedColor = (isChecked) => {
 .prefecture:hover {
   background-color: #3a0852;
   color: #ffffff;
+}
+
+@media (max-width: 1200px) {
+  .prefecture {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    min-width: 20px;
+    padding: 4px;
+    margin: 1px;
+  }
 }
 </style>

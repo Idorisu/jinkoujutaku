@@ -12,6 +12,7 @@ import PrefectureList from './components/PrefectureList.vue'
 <style scoped>
 * {
   font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  box-sizing: none;
 }
 
 h1 {
@@ -21,7 +22,12 @@ h1 {
   font-size: 50px;
   color: aliceblue;
   border: #313131 3px solid;
-  border-radius: 20px;
-  background-color: #5f0a89;
+  border-radius: 10px;
+  background-color: #091a98;
+}
+
+div {
+  max-width: 1600px;
+  min-width: 600px;
 }
 </style>
