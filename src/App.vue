@@ -12,18 +12,19 @@ import PrefectureList from './components/PrefectureList.vue'
 <style scoped>
 * {
   font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-  box-sizing: none;
+  box-sizing: content-box;
+  margin: 0px auto;
 }
 
 h1 {
   text-align: center;
-  margin: 20px 0;
+  margin: 0px 0px;
   text-shadow: 2px 2px 2px #313131;
   font-size: 50px;
   color: aliceblue;
-  border: #313131 3px solid;
+  border: #ffffff 3px solid;
   border-radius: 10px;
-  background-color: #091a98;
+  background-color: #19666b;
 }
 
 div {

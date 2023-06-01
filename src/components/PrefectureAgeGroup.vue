@@ -57,6 +57,7 @@ onMounted(async () => {
   border: 3px solid #ffffff;
   border-radius: 10px;
   background-color: black;
+  margin-bottom: 10px;
 }
 
 .prefecture {
@@ -70,6 +71,11 @@ onMounted(async () => {
 }
 
 .prefecture:hover {
+  background-color: #3a0852;
+  color: #ffffff;
+}
+
+.checked {
   background-color: #3a0852;
   color: #ffffff;
 }

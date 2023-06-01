@@ -58,6 +58,7 @@ const currentGraphsUpdater = () => {
 const setToggle = () => {
   console.log('I am in setToggle')
   fetchPrefecture.value.proceedSaving()
+  alert('Saved')
 }
 
 const clearGraph = () => {
@@ -69,35 +70,29 @@ const clearGraph = () => {
 const options = reactive({
   // Chart Properties
   chart: {
-    width: 1100,
+    style: {
+      fontFamily: 'IMPACT'
+    },
     type: 'spline',
-    borderColor: '#091a98',
+    scrollablePlotArea: {
+      minWidth: 300,
+      scrollPositionX: 1,
+      color: '#ffffff'
+    },
+    borderColor: '#19666b',
     borderWidth: 4,
     borderRadius: 10,
     zoomType: 'x',
     panning: true,
     panKey: 'shift',
-    backgroundColor: {
-      linearGradient: [0, 0, 500, 500],
-      stops: [
-        [0, 'rgb(255, 255, 255)'],
-        [1, 'rgb(200, 200, 255)']
-      ]
-    }
+    backgroundColor: '#FFFFFF'
   },
   responsive: {
     rules: [
       {
         condition: {
-          maxWidth: 1200,
+          maxWidth: 1300,
           minWidth: 300
-        },
-        chartOptions: {
-          legend: {
-            align: 'center',
-            verticalAlign: 'bottom',
-            layout: 'horizontal'
-          }
         }
       }
     ]
@@ -116,9 +111,15 @@ const options = reactive({
     }
   },
   series: [],
+  navigation: {
+    menuItemStyle: {
+      fontSize: '10px'
+    }
+  },
   title: {
     style: {
-      display: 'none'
+      display: 'none',
+      color: '#ffffff'
     }
   },
   legend: {
@@ -128,7 +129,12 @@ const options = reactive({
   },
   xAxis: {
     title: {
-      text: '年度'
+      text: '年度',
+      labels: {
+        style: {
+          color: '#ffffff'
+        }
+      }
     },
     categories: [
       1960, 1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030,
@@ -137,7 +143,12 @@ const options = reactive({
   },
   yAxis: {
     title: {
-      text: '人口数'
+      text: '人口数',
+      labels: {
+        style: {
+          color: '#ffffff'
+        }
+      }
     }
   }
 })
@@ -191,7 +202,7 @@ const addItems = (id, name, population) => {
       </div>
     </div>
     <div class="highchart">
-      <Highcharts :options="options" />
+      <Highcharts :options="options" class="highchartInner" />
     </div>
   </main>
 </template>
@@ -210,7 +221,8 @@ div .clearSaver {
   border-radius: 10px;
   max-width: 300px;
   min-width: 200px;
-  margin-bottom: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 header {
@@ -230,7 +242,7 @@ header {
 }
 
 div {
-  margin-top: 20px;
+  margin-top: 0px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -242,7 +254,7 @@ h2 {
 }
 
 .PrefSelect {
-  min-width: 1300px;
+  min-width: 1200px;
   max-width: 100%;
   margin: 10px auto;
   flex-direction: column;
@@ -251,15 +263,24 @@ h2 {
   align-items: center;
   border: 3px solid #ffffff;
   border-radius: 10px;
-  background-color: #091a98;
+  background-color: #19666b;
 }
 
 .highchart {
   margin: 0px auto;
-  padding: 10px;
+  padding: 0px;
   background-color: #322c35;
   border: 3px solid #ffffff;
   border-radius: 10px;
+}
+
+.highchartInner {
+  width: 100%;
+}
+
+.highchart text {
+  fill: #ffffff;
+  color: #ffffff;
 }
 
 div#highcharts-9hof5bn-0.highcharts-container {
@@ -283,9 +304,18 @@ button:hover {
   color: #322c35;
 }
 
+.highcharts-background {
+  fill: #322c35;
+  max-width: 1200px;
+  min-width: 300px;
+}
+
 @media (max-width: 1200px) {
+  h2 {
+    font-size: 20px;
+  }
   div {
-    margin-top: 20px;
+    margin-top: 0px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -293,19 +323,22 @@ button:hover {
     padding: 0px;
   }
   .highchart {
-    margin: 10px auto;
-    padding: 10px;
-    max-width: 1100px;
+    margin: 0px auto;
+    padding: 5px;
+    width: 100%;
+  }
+  .highchartInner {
+    max-width: 1200px;
     min-width: 300px;
   }
   body {
-    max-width: 1100px;
+    max-width: 1200px;
   }
   main {
-    max-width: 1100px;
+    max-width: 1200px;
   }
   .PrefSelect {
-    max-width: 1100px;
+    max-width: 1200px;
     min-width: 300px;
     flex-direction: none;
   }

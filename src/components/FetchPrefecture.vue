@@ -27,6 +27,16 @@ const prefectures = ref([])
 const insertedGraphs = ref([])
 const selectedPrefs = ref([])
 
+const getSelColor = () => {
+  prefectures.value.forEach((obj) => {
+    if (obj.isChecked === true) {
+      return '3a0852'
+    } else {
+      return 'white'
+    }
+  })
+}
+
 const proceedSaving = () => {
   /* console.log('I am in proceedSaving')
   console.log(selectedPrefs.value) */
@@ -196,30 +206,29 @@ const switchChart = (id, name, isChecked, setAge) => {
     }
   }
 }
-
-const isCheckedColor = (isChecked) => {
-  if (isChecked) {
-    return '#3a0852'
-  } else {
-    return '#ffffff'
-  }
-}
 </script>
 
 <template>
   <div id="prefZone" class="PrefZone">
     <!-- <input v-model.trim="search" type="text" placeholder="県サーチ。。。" /> -->
-    <div v-for="prefecture in prefectures" :key="prefecture.id" class="prefecture">
+    <div
+      v-for="prefecture in prefectures"
+      :key="prefecture.id"
+      class="prefecture"
+      :class="{ checked: prefecture.isChecked }"
+    >
       <label :for="prefecture.id">
         <input
           type="checkbox"
           :id="prefecture.id"
           :checked="prefecture.isChecked"
+          v-model="prefecture.isChecked"
           @click="
             console.log(setAge),
-              switchChart(prefecture.id, prefecture.name, prefecture.isChecked, setAge)
+              switchChart(prefecture.id, prefecture.name, prefecture.isChecked, setAge),
+              getSelColor()
           "
-          :style="{ backgroundcolor: isCheckedColor }"
+          :style="{ backgroundcolor: getSelColor() }"
         />
         {{ prefecture.name }}
       </label>
@@ -232,7 +241,7 @@ div #prefZone .prefZone {
   width: 1600px;
   justify-content: center;
   align-items: center;
-  margin: 10px auto;
+  margin: 0px auto;
   padding: 10px 10px;
   background-color: #cd2222;
   border-radius: 10px;
@@ -251,7 +260,7 @@ div #prefZone .prefZone {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.prefecture:checked {
+.checked {
   background-color: #3a0852;
   color: #ffffff;
 }
