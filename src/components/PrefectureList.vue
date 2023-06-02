@@ -2,18 +2,25 @@
 <script setup>
 import FetchPrefecture from './FetchPrefecture.vue'
 import PrefectureAgeGroup from './PrefectureAgeGroup.vue'
+import MapChart from '@/components/MapChart.vue'
 import { Chart } from 'highcharts-vue'
 import { reactive, ref } from 'vue'
 
 const Highcharts = Chart
 
 let setAge = ref('総人口')
+const populationData = ref([''])
 
 const fetchPrefecture = ref(null)
 const insertedGraphs = ref([])
 const saveLast = ref('No')
 const lastSaveChecked = ref(false)
 const elSelectendo = ref(false)
+
+const updateData = (year) => {
+  console.log('I am in updateData')
+  fetchPrefecture.value.masterSetter(year)
+}
 
 const saveLastStatus = () => {
   if (elSelectendo.value === true) {
@@ -179,6 +186,7 @@ const addItems = (id, name, population) => {
         @addItems="addItems"
         @removeItems="removeItems"
         :setAge="setAge"
+        :populationData="populationData"
         ref="fetchPrefecture"
       />
       <div class="PrefList"></div>
@@ -203,6 +211,9 @@ const addItems = (id, name, population) => {
     </div>
     <div class="highchart">
       <Highcharts :options="options" class="highchartInner" />
+    </div>
+    <div class="highMap">
+      <MapChart @updateData="updateData" :populationData="populationData" />
     </div>
   </main>
 </template>
@@ -268,6 +279,14 @@ h2 {
 
 .highchart {
   margin: 0px auto;
+  padding: 0px;
+  background-color: #322c35;
+  border: 3px solid #ffffff;
+  border-radius: 10px;
+}
+.highMap {
+  margin: 0px auto;
+  margin-top: 10px;
   padding: 0px;
   background-color: #322c35;
   border: 3px solid #ffffff;

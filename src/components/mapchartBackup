@@ -1,0 +1,99 @@
+<script setup>
+  import jpMap from '@highcharts/map-collection/countries/jp/jp-all.topo.json'
+
+  const mapOptions = {
+    chart: {
+      map: jpMap
+    },
+    title: {
+      text: 'Highmaps basic demo'
+    },
+    subtitle: {
+      text: 'Test Map'
+    },
+    mapNavigation: {
+      enabled: true,
+      buttonOptions: {
+        alignTo: 'spacingBox'
+      }
+    },
+    colorAxis: {
+      min: 0
+    },
+    series: [
+      {
+        name: 'Random data',
+        states: {
+          hover: {
+            color: '#BADA55'
+          }
+        },
+        dataLabels: {
+          enabled: true,
+          format: '{point.name}'
+        },
+        allAreas: false,
+        data: [
+          ['jp-hs', 10],
+          ['jp-sm', 11],
+          ['jp-yc', 12],
+          ['jp-km', 13],
+          ['jp-eh', 14],
+          ['jp-kg', 15],
+          ['jp-is', 16],
+          ['jp-hk', 17],
+          ['jp-tk', 18],
+          ['jp-3461', 19],
+          ['jp-3457', 20],
+          ['jp-ib', 21],
+          ['jp-st', 22],
+          ['jp-sg', 23],
+          ['jp-yn', 24],
+          ['jp-kn', 25],
+          ['jp-fo', 26],
+          ['jp-fs', 27],
+          ['jp-3480', 28],
+          ['jp-ts', 29],
+          ['jp-ky', 30],
+          ['jp-me', 31],
+          ['jp-ai', 32],
+          ['jp-nr', 33],
+          ['jp-os', 34],
+          ['jp-wk', 35],
+          ['jp-ch', 36],
+          ['jp-ak', 37],
+          ['jp-mg', 38],
+          ['jp-tt', 39],
+          ['jp-hg', 40],
+          ['jp-gf', 41],
+          ['jp-nn', 42],
+          ['jp-ty', 43],
+          ['jp-ni', 44],
+          ['jp-oy', 45],
+          ['jp-ao', 46],
+          ['jp-mz', 47],
+          ['jp-iw', 48],
+          ['jp-kc', 49],
+          ['jp-ot', 50],
+          ['jp-sz', 51],
+          ['jp-fi', 52],
+          ['jp-sh', 53],
+          ['jp-tc', 54],
+          ['jp-yt', 55],
+          ['jp-3302', 56]
+          // 以降は下記参照
+          // https://github.com/highcharts/highcharts-vue/blob/master/demo-v3/src/components/MapChart.vue
+        ]
+      }
+    ]
+  }
+</script>
+
+<template>
+  <highcharts constructor-type="mapChart" :options="mapOptions" class="map" />
+</template>
+<style>
+  .map {
+    min-height: 500px;
+  }
+</style>

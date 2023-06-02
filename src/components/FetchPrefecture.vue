@@ -5,14 +5,14 @@
 import axios from 'axios'
 import { ref, onMounted, defineEmits, defineProps } from 'vue'
 
-const { setAge } = defineProps(['setAge'])
+const { setAge, populationData } = defineProps(['setAge', 'populationData'])
 const currId = ref('')
 const currName = ref('')
 const currisChecked = ref(false)
 
 const emit = defineEmits(['addItems', 'removeItems'])
 
-const ACCESS_TOKEN = 'GKVk1oWzexxJz7hrgnivmX20jtuGKMbU1LMx4i16'
+const ACCESS_TOKEN = 'h4BYH4uBZ2dW7i5D6sPr8CMexzH8ZN9Kk3NVmY1P'
 
 const getPrefectures = async (path) => {
   const response = await axios.get(`https://opendata.resas-portal.go.jp/api/v1/${path}`, {
@@ -26,6 +26,7 @@ const getPrefectures = async (path) => {
 const prefectures = ref([])
 const insertedGraphs = ref([])
 const selectedPrefs = ref([])
+const allPrefPop = ref([])
 
 const getSelColor = () => {
   prefectures.value.forEach((obj) => {
@@ -56,13 +57,49 @@ const proceedSaving = () => {
   localStorage.setItem('selectedPrefs', JSON.stringify(selectedPrefs.value))
 }
 
+const masterSetter = async (year) => {
+  console.log('I am in masterSetter, year is: ', year)
+  console.log(prefectures.value)
+  prefectures.value.forEach((item) => {
+    console.log('I am in masterSetter, and the item is ', item)
+    getPopulation(item.id).then((res) => {
+      console.log('I am in masterSetter, and the res is ', res)
+      const populationFound = res.find((pop) => pop.year == year)
+      if (populationFound) {
+        const nameExists = allPrefPop.value.some((obj) => obj.name === item.name) // use some to check if the name already exists in the array
+        console.log('I am in masterSetter, and the nameExists is ', nameExists)
+        if (!nameExists) {
+          // if the name does not exist, push it
+          allPrefPop.value.push({
+            id: item.id,
+            name: item.name,
+            population: populationFound['value']
+          })
+          populationData.value = allPrefPop.value
+          console.log('I am in masterSetter, and the allPrefPop is ', allPrefPop.value)
+        } else {
+          console.log('I am in masterSetter, and the name already exists')
+        }
+      } else {
+        // do something else
+      }
+    })
+  })
+  console.log(
+    'I am in masterSetter, and the Population Data is ',
+    populationData.value,
+    'for the year: ',
+    year
+  )
+}
+
 const loadSaving = async () => {
   console.log('I am in loadSaving')
   const savedPrefs = JSON.parse(localStorage.getItem('selectedPrefs'))
   console.log(savedPrefs)
   if (savedPrefs !== null) {
-    /* console.log('SavedPrefs is not null')
-    console.log('Im printing prefectures first', prefectures.value) */
+    console.log('SavedPrefs is not null')
+    console.log('Im printing prefectures first', prefectures.value)
     prefectures.value.forEach((item) => {
       savedPrefs.forEach((obj) => {
         /* console.log('Inside the foreach loop: ', obj.name, item.name) */
@@ -73,6 +110,28 @@ const loadSaving = async () => {
         }
       })
     })
+    populationData.value = allPrefPop.value
+  }
+  console.log('I am in loadSaving, and the populationData is ', allPrefPop.value)
+}
+
+const getPopulation = async (id) => {
+  const path = `population/composition/perYear?prefCode=${id}`
+  /* console.log('Im currently in DrawChart, and the id is ' + setAge) */
+  try {
+    const response = await getPrefectures(path)
+    // filter the data array by year
+    const population = response.data.result.data[0].data.map((val) => {
+      return {
+        year: val['year'],
+        value: val['value']
+      }
+    })
+    /* mapPopulation.value = population
+    console.log('I got mapPopulation here: ', mapPopulation.value) */
+    return population
+  } catch (error) {
+    console.error(error.message)
   }
 }
 
@@ -123,7 +182,9 @@ defineExpose({
   updatePopulation,
   setPrefectureToggle,
   proceedSaving,
-  clearSaved
+  clearSaved,
+  allPrefPop,
+  masterSetter
 })
 
 onMounted(async () => {
@@ -135,6 +196,7 @@ const fetchPrefectures = async () => {
   const path = 'prefectures'
   try {
     const response = await getPrefectures(path)
+    console.log(response.data.result)
     prefectures.value = response.data.result.map((val) => {
       return {
         id: val['prefCode'],
@@ -169,6 +231,7 @@ const drawChartAge = async (id, name, age) => {
     const population = response.data.result.data
       .find((item) => item.label === age)
       .data.map((val) => val['value'])
+    console.log('I am in drawChartAge, and the population is ', population)
     emit('addItems', id, name, population)
     prefectures.value[id - 1].isChecked = true
     console.log(prefectures.value[id - 1].isChecked)

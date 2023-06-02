@@ -10,6 +10,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@highcharts/map-collection": "^2.0.1",
     "highcharts": "^11.0.1",
     "highcharts-vue": "^1.4.1",
     "vue": "^3.3.2",
